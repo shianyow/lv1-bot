@@ -37,14 +37,13 @@ function init()
     
     try
     {
-      // 確認標題格式
-      let rule = "^(【.*" + report.title + ".*】)";
-      let re = new RegExp(`${rule}`);
-      if (!event.word.match(re)) {
+      // 確認標題格式：第一行需包含關鍵字
+      let firstLine = event.word.split('\n')[0];
+      if (!firstLine.includes(report.title.replace(/[0-9.]+版$/, ''))) {
         updateNGTime(event.user.userId);
         return [
           LineApp.LineText(event.user.displayName + "夥伴您好，" +
-            "請使用以下標題格式，前面請勿空白、空行：\n" + "【" + report.title + "】"),
+            "請在第一行包含「" + report.title + "」"),
           LineApp.LineStickerFormatNG(),
         ];
       }
@@ -87,7 +86,7 @@ function init()
     {
       log(e);
 
-      if(!TEST_GROUP.includes(event.source.groupId)) {
+      if(!GROUP_TEST.includes(event.source.groupId)) {
         return [];
       }
 
@@ -95,20 +94,29 @@ function init()
     }
   }
 
-  const reports = [
-    { title: "覺察日記6.0版", sheetName: "Report_Bot_覺察" },
-    { title: "觀呼吸心得分享", sheetName: "Report_Bot_觀呼吸" },
-    { title: "天人師心得分享", sheetName: "Report_Bot_天人師" },
-  ];
+  // 覺察日記（統一處理，不論是否帶版本號）
+  lineApp.addRule_quote(
+    "覺察日記",
+    (event) => {
+      return collectReport(event, { title: "覺察日記6.0版", sheetName: "Report_Bot_覺察" });
+    }
+  );
 
-  for (const report of reports) {
-    lineApp.addRule_quote(
-      report.title,
-      (event) => {
-        return collectReport(event, report);
-      }
-    );
-  }
+  // 觀呼吸心得分享
+  lineApp.addRule_quote(
+    "觀呼吸心得分享",
+    (event) => {
+      return collectReport(event, { title: "觀呼吸心得分享", sheetName: "Report_Bot_觀呼吸" });
+    }
+  );
+
+  // 天人師心得分享
+  lineApp.addRule_quote(
+    "天人師心得分享",
+    (event) => {
+      return collectReport(event, { title: "天人師心得分享", sheetName: "Report_Bot_天人師" });
+    }
+  );
 
 
   // TITLE = "觀呼吸心得分享";
@@ -184,7 +192,7 @@ function init()
   //     {
   //       log(e);
 
-  //       if(!TEST_GROUP.includes(event.source.groupId)) {
+  //       if(!GROUP_TEST.includes(event.source.groupId)) {
   //         return [];
   //       }
 

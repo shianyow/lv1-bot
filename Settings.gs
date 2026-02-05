@@ -1,15 +1,15 @@
-var CHANNEL_ACCESS_TOKEN = 'wLdVvgCce1K8u0X9/8RYJtsIk5aC0IXL8HkqFUVRIR8I8oF39t+wk6uoWziC+DwK20X7Z5EPwagUGyQldG+mJjqfg8I9C2D73HbxthKYBFfBd2fuaWhxNdOJcbWH7z+ZK85RC2HzjRF8Up5uQqy6WAdB04t89/1O/w1cDnyilFU=';
+// 從 Script Properties 讀取敏感資訊
+var CHANNEL_ACCESS_TOKEN = PropertiesService.getScriptProperties().getProperty('CHANNEL_ACCESS_TOKEN');
+
 var LINENOTIFY = {
-  CLIENTID:'',
-  CLIENTSECRET:'',
+  CLIENTID: PropertiesService.getScriptProperties().getProperty('LINENOTIFY_CLIENTID') || '',
+  CLIENTSECRET: PropertiesService.getScriptProperties().getProperty('LINENOTIFY_CLIENTSECRET') || '',
 }
 var LINELOGIN = {
-  CLIENTID:'',
-  CLIENTSECRET:'',
+  CLIENTID: PropertiesService.getScriptProperties().getProperty('LINELOGIN_CLIENTID') || '',
+  CLIENTSECRET: PropertiesService.getScriptProperties().getProperty('LINELOGIN_CLIENTSECRET') || '',
 }
 
-var LIFFURL = '';
+var LIFFURL = PropertiesService.getScriptProperties().getProperty('LIFFURL') || '';
 
-var GROUP_TEST = [
-  "Ceefd290fa7b1e1187b05da345dbadf0f", // "測試"
-];
+var GROUP_TEST = (PropertiesService.getScriptProperties().getProperty('GROUP_TEST') || '').split(',').filter(x => x);
