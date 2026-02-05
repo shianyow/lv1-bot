@@ -1,0 +1,15 @@
+var CHANNEL_ACCESS_TOKEN = 'wLdVvgCce1K8u0X9/8RYJtsIk5aC0IXL8HkqFUVRIR8I8oF39t+wk6uoWziC+DwK20X7Z5EPwagUGyQldG+mJjqfg8I9C2D73HbxthKYBFfBd2fuaWhxNdOJcbWH7z+ZK85RC2HzjRF8Up5uQqy6WAdB04t89/1O/w1cDnyilFU=';
+var LINENOTIFY = {
+  CLIENTID:'',
+  CLIENTSECRET:'',
+}
+var LINELOGIN = {
+  CLIENTID:'',
+  CLIENTSECRET:'',
+}
+
+var LIFFURL = '';
+
+var GROUP_TEST = [
+  "Ceefd290fa7b1e1187b05da345dbadf0f", // "測試"
+];
