@@ -1,3 +1,12 @@
+/**
+ * 試算表開啟時建立自訂選單
+ */
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('工具箱')
+    .addItem('匯出覺察日記', 'showExportDiaryDialog')
+    .addToUi();
+}
 
 function doGet(e)
 {
