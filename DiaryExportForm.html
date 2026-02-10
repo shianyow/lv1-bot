@@ -84,8 +84,20 @@
     <input type="date" id="endDate">
   </div>
 
+  <div class="form-group">
+    <label>匯出格式</label>
+    <div style="display: flex; gap: 16px; margin-top: 4px;">
+      <label style="font-weight: normal; display: flex; align-items: center; gap: 4px;">
+        <input type="radio" name="format" value="pdf" checked> PDF
+      </label>
+      <label style="font-weight: normal; display: flex; align-items: center; gap: 4px;">
+        <input type="radio" name="format" value="docx"> DOCX
+      </label>
+    </div>
+  </div>
+
   <div class="btn-group">
-    <button class="btn btn-primary" id="exportBtn" onclick="exportPdf()">匯出 PDF</button>
+    <button class="btn btn-primary" id="exportBtn" onclick="exportDiary()">匯出</button>
     <button class="btn btn-secondary" onclick="google.script.host.close()">取消</button>
   </div>
 
@@ -99,10 +111,11 @@
       status.style.display = 'block';
     }
 
-    function exportPdf() {
+    function exportDiary() {
       var name = document.getElementById('name').value.trim();
       var startDate = document.getElementById('startDate').value;
       var endDate = document.getElementById('endDate').value;
+      var format = document.querySelector('input[name="format"]:checked').value;
 
       if (!name) {
         showStatus('請輸入姓名', 'error');
@@ -131,7 +144,10 @@
               byteNumbers[i] = byteChars.charCodeAt(i);
             }
             var byteArray = new Uint8Array(byteNumbers);
-            var blob = new Blob([byteArray], {type: 'application/pdf'});
+            var mimeType = format === 'docx'
+              ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+              : 'application/pdf';
+            var blob = new Blob([byteArray], {type: mimeType});
             var link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = result.fileName;
@@ -145,7 +161,7 @@
           document.getElementById('exportBtn').disabled = false;
           showStatus('發生錯誤：' + error.message, 'error');
         })
-        .exportDiaryPdf(name, startDate, endDate);
+        .exportDiaryPdf(name, startDate, endDate, format);
     }
   </script>
 </body>

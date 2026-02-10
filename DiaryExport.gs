@@ -13,14 +13,16 @@ function showExportDiaryDialog() {
 }
 
 /**
- * 匯出覺察日記 PDF 主函數
+ * 匯出覺察日記主函數
  * @param {string} name - 姓名
  * @param {string} startDateStr - 開始日期 (YYYY-MM-DD)
  * @param {string} endDateStr - 結束日期 (YYYY-MM-DD)
- * @returns {Object} 結果物件 {success, url, fileName, message}
+ * @param {string} format - 匯出格式 ('pdf' 或 'docx')
+ * @returns {Object} 結果物件 {success, data, fileName, message}
  */
-function exportDiaryPdf(name, startDateStr, endDateStr) {
+function exportDiaryPdf(name, startDateStr, endDateStr, format) {
   try {
+    format = format || 'pdf';
     // 手動解析日期以避免時區問題 (YYYY-MM-DD)
     var startParts = startDateStr.split('-');
     var endParts = endDateStr.split('-');
@@ -37,8 +39,8 @@ function exportDiaryPdf(name, startDateStr, endDateStr) {
       };
     }
 
-    // 生成 PDF
-    var result = createDiaryPdf(name, startDate, endDate, entries);
+    // 生成文件
+    var result = createDiaryPdf(name, startDate, endDate, entries, format);
 
     return {
       success: true,
@@ -121,7 +123,7 @@ function getDiaryEntries(name, startDate, endDate) {
  * @param {Array} entries - 日記條目陣列
  * @returns {Object} {url, fileName}
  */
-function createDiaryPdf(name, startDate, endDate, entries) {
+function createDiaryPdf(name, startDate, endDate, entries, format) {
   var timezone = 'Asia/Taipei';
 
   // 格式化日期
@@ -253,18 +255,32 @@ function createDiaryPdf(name, startDate, endDate, entries) {
   // 儲存並關閉 Doc
   doc.saveAndClose();
 
-  // 將 Doc 轉換成 PDF
   var docFile = DriveApp.getFileById(doc.getId());
-  var pdfBlob = docFile.getAs('application/pdf');
+  var blob;
+  var ext;
+
+  if (format === 'docx') {
+    // 匯出為 DOCX
+    var url = 'https://docs.google.com/document/d/' + doc.getId() + '/export?format=docx';
+    var response = UrlFetchApp.fetch(url, {
+      headers: { 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken() }
+    });
+    blob = response.getBlob();
+    ext = '.docx';
+  } else {
+    // 匯出為 PDF
+    blob = docFile.getAs('application/pdf');
+    ext = '.pdf';
+  }
 
   // 取得 base64 資料供前端下載
-  var pdfData = Utilities.base64Encode(pdfBlob.getBytes());
+  var data = Utilities.base64Encode(blob.getBytes());
 
   // 刪除暫時的 Doc
   docFile.setTrashed(true);
 
   return {
-    data: pdfData,
-    fileName: fileName + '.pdf'
+    data: data,
+    fileName: fileName + ext
   };
 }
